@@ -1,0 +1,5 @@
+# initial gitignore, add more if necessary
+*.pyc
+*.pyo
+
+
