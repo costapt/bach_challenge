@@ -2,3 +2,5 @@
 Some good examples of how normal histology images should look like:
 http://www.pathpedia.com/education/eatlas/histology/breast/Images.aspx
 
+Wisconsin Database of Breast Cancer:
+https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+(Diagnostic)
