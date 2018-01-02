@@ -37,7 +37,7 @@ with open('normal_square_train.pickle', 'rb') as handle:
     normal_i_train = pickle.load(handle)
 with open('normal_square_test.pickle', 'rb') as handle:
     normal_i_test = pickle.load(handle)
-    
+
 i_train = np.concatenate((benign_i_train, insitu_i_train, invasive_i_train, normal_i_train),0)
 i_val = np.concatenate((benign_i_val, insitu_i_val, invasive_i_val, normal_i_val),0)
 i_test = np.concatenate((benign_i_test, insitu_i_test, invasive_i_test, normal_i_test),0)
@@ -76,7 +76,7 @@ for i in range(len(i_test)):
     elif (i >= tam_test*3):
         ll_test[i,:] = [0, 0, 0, 1]
 
-from keras.applications.inception_resnet_v2 import InceptionResNetV2
+from keras.applications.inception_resnet_v2 import InceptionResNetV2, preprocess_input
 from keras.layers import Dense, GlobalAveragePooling2D, Dropout
 from keras.models import Model
 from keras.callbacks import ModelCheckpoint, EarlyStopping
@@ -121,7 +121,8 @@ datagen = ImageDataGenerator(
         vertical_flip = True,
         width_shift_range=0.1,
         height_shift_range=0.1,
-        zoom_range=0.1)
+        zoom_range=0.1,
+        preprocessing_function=preprocess_input)
 
 hist = finetuned_model.fit_generator(datagen.flow(i_train, ll_train, batch_size = 16, shuffle = True), validation_data = (i_val, ll_val), steps_per_epoch = len(i_train), epochs = 75, callbacks = callbacks_list, verbose = 1)
 
@@ -131,7 +132,7 @@ for layer in finetuned_model.layers[:400]:
     layer.trainable = False
 for layer in finetuned_model.layers[400:]:
     layer.trainable = True
-    
+
 from keras.optimizers import SGD
 finetuned_model.compile(optimizer=SGD(lr=0.0001, momentum=0.9), loss='categorical_crossentropy', metrics=['accuracy'])
 
