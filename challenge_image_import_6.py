@@ -76,7 +76,7 @@ for i in range(len(i_test)):
     elif (i >= tam_test*3):
         ll_test[i,:] = [0, 0, 0, 1]
 
-from keras.applications.inception_resnet_v2 import InceptionResNetV2, preprocess_input
+from keras.applications.inception_resnet_v2 import InceptionResNetV2#, preprocess_input
 from keras.layers import Dense, GlobalAveragePooling2D, Dropout
 from keras.models import Model
 from keras.callbacks import ModelCheckpoint, EarlyStopping
@@ -87,7 +87,7 @@ gc.collect()
 
 base_model = InceptionResNetV2(include_top = 0, weights='imagenet', input_shape=[224,224,3], classes = 4)
 x = GlobalAveragePooling2D()(base_model.output)
-x = Dense(1024, activation = 'relu')(x)
+x = Dense(256, activation = 'relu')(x)
 x = Dropout(0.5)(x)
 x = Dense(4, activation = 'softmax')(x)
 finetuned_model = Model(base_model.input, x)
@@ -121,16 +121,16 @@ datagen = ImageDataGenerator(
         vertical_flip = True,
         width_shift_range=0.1,
         height_shift_range=0.1,
-        zoom_range=0.1,
-        preprocessing_function=preprocess_input)
+        zoom_range=0.1)#,
+#        preprocessing_function=preprocess_input)
 
 hist = finetuned_model.fit_generator(datagen.flow(i_train, ll_train, batch_size = 16, shuffle = True), validation_data = (i_val, ll_val), steps_per_epoch = len(i_train), epochs = 75, callbacks = callbacks_list, verbose = 1)
 
 finetuned_model.load_weights(top_weights_path)
 
-for layer in finetuned_model.layers[:400]:
+for layer in finetuned_model.layers[:679]:
     layer.trainable = False
-for layer in finetuned_model.layers[400:]:
+for layer in finetuned_model.layers[679:]:
     layer.trainable = True
 
 from keras.optimizers import SGD
